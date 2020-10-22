@@ -1,5 +1,4 @@
 # docker 使用入门
-[TOC]
 本文仅从实用角度介绍 docker 在 Linux 平台的简单使用。<br>
 文中内容已在 centos7 中进行验证。<br>
 使用 docker --help 查看命令帮助。
