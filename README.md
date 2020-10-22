@@ -1,4 +1,4 @@
 # weekly_note
 每周一篇
 
-test
+记录每周总结与心得。
