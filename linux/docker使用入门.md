@@ -98,7 +98,7 @@ $ docker load -i container-backup.tar
 $ docker image ls
 ```
 ## container 初始容量调整
-container 默认大小是 10G，使用过程中可能出现存储空间不足的问题。已验证的一种修改方法如下：
+container 默认大小是 10G，使用过程中可能出现存储空间不足的问题。已验证的一种修改方法如下(修改为100G)：
 1. 关闭 docker 服务：
 
     ```shell
@@ -110,7 +110,7 @@ container 默认大小是 10G，使用过程中可能出现存储空间不足的
     ```
 3. 修改 docker.service 文件
     ```shell
-    $ sodu vim /usr/lib/systemd/system/docker.service
+    $ sudo vim /usr/lib/systemd/system/docker.service
     ```
     需要修改的行是：
     ```ini
