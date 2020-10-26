@@ -26,7 +26,7 @@ http://blog.codinglabs.org/articles/theory-of-mysql-index.html
 
 #### EXPLAIN
 
-​		![image-20201026090354623](C:\Users\hr\AppData\Roaming\Typora\typora-user-images\image-20201026090354623.png)
+​		![image-ExPlain.jpg](imgs/ExPlain.jpg)
 
 ​		table：对应的表 
 
@@ -66,12 +66,12 @@ http://blog.codinglabs.org/articles/theory-of-mysql-index.html
 
 ###### MYISAM引擎非聚簇索引
 
-![8.png](imgs/8.png)
-![8.png](imgs/9.png)
+![8](imgs/8.png)
+![9](imgs/9.png)
 
 ###### InnoDB引擎聚簇索引
 
-![8.png](imgs/10.png)
+![10](imgs/10.png)
 
 ###### InnoDB主键
 
