@@ -52,11 +52,11 @@ $ docker exec -it $container_id /bin/bash
 ```shell
 # yum install -y openssh-server vim lrzsz wget gcc-c++ pcre pcre-devel zlib zlib-devel ruby openssl openssl-devel patch bash-completion zlib.i686 libstdc++.i686 lsof unzip zip bzip2 initscripts net-tools sudo openssh-clients
 ```
-接下来生成 ssh_key:
+接下来生成 ssh_key :
 ```shell
-# ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key
-# ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key
-# ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key
+# ssh-keygen -q -t rsa -f /etc/ssh/ssh_host_rsa_key -N ""
+# ssh-keygen -q -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N ""
+# ssh-keygen -q -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N ""
 ```
 然后重启 ssh 服务
 ```shell
@@ -119,6 +119,7 @@ container 默认大小是 10G，使用过程中可能出现存储空间不足的
     修改为：
     ```ini
     ExecStart=/usr/bin/dockerd --storage-driver devicemapper --storage-opt dm.loopdatasize=500G --storage-opt dm.loopmetadatasize=10G --storage-opt dm.fs=ext4 --storage-opt dm.basesize=100G -H fd:// --containerd=/run/containerd/containerd.sock
+    ```
 4. 配置文件刷新
     ```shell
     $ sudo systemctl daemon-reload
