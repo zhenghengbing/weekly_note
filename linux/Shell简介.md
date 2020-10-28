@@ -1,7 +1,5 @@
 # Shell 简介
 
-
-
 ## Shell 是什么
 Shell，英文中的意思为壳，比如贝壳类生物的外壳。<br>
 Linux 中，Shell 是终端用户和操作系统之间的接口。用户通过 Shell 这个“壳”来和操作系统进行交互。<br>
@@ -18,8 +16,6 @@ Shell 程序接收单击 “Enter” 键之前的文本内容，然后对文本�
 $ ls -l
 ```
 Shell 首先根据空格（因此 Shell 对空格敏感）得到 "ls" 和 "-l" 两部分内容。命令部分为 "ls"，继续分析 "-l"，发现开头是 "-"，从而知道它是一个选项。文本分析结束后 Shell 创建一个子进程执行操作，同时 Shell 进程阻塞等待执行完成。执行结束后，Shell 将结果输出到终端（Shell 的默认输出），然后继续展示命令提示符等待下次输入。
-
-
 
 ## Shell 命令的分类
 * Shell 内建函数 (built-in function)
@@ -45,8 +41,6 @@ $ type cd
 $ type date
 $ type ll
 ```
-
-
 ## Shell 的分类
 
 Shell 其实是统称，所有的文本解释器都可以被称为Shell。常见的 Shell 有：sh，bash，dash 等。

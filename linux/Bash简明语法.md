@@ -31,19 +31,33 @@ $ echo $((1+2)) # 输出 3
 $ result=$((1+2)) # 将结果赋给变量
 ```
 
-
-
 ## 选择结构
+
+选择结构的实现有两种语法，分别是 **if** 和 **case**。下面分别进行介绍。
+
+### if 语句
+
+介绍写起来太麻烦了，直接看示例吧：
+
+```shell
+#!/bin/bash
+
+name=`whoami`
+
+if [ $name = "root"]
+then
+	echo "You are root"
+	echo "You are God"
+else
+	echo "You are $name"
+fi
+```
 
 
 
 ## 循环结构
 
-
-
 ## 函数
-
-
 
 ## Bash脚本
 
