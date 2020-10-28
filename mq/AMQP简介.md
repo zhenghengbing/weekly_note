@@ -6,7 +6,7 @@ AMQP 0-9-1 全称是 Advanced Message Queuing Protocol。<br>
 
 AMQP 的作用可以简单描述为：<br>
 
-![](https://www.rabbitmq.com/img/tutorials/intro/hello-world-example-routing.png)<br>
+![](./img/hello-world-example-routing.png)<br>
 
 AMQP 有三个主要组件，分别是：
 
@@ -50,7 +50,7 @@ default exchange 是一种 direct exchange。<br>
 * queue 会绑定到一个 routing key 为 K 的 exchange
 * 携带 routing key 为 R 的消息到达 direct exchange，如果 R == K，则投递消息到绑定的 queue
 
-![](https://www.rabbitmq.com/img/tutorials/intro/exchange-direct.png)
+![](./img/exchange-direct.png)
 
 ### Fanout exchange
 
@@ -58,7 +58,7 @@ default exchange 是一种 direct exchange。<br>
 
 不通过 routing key 进行路由。当 fanout exchange 收到消息后，会将消息（的备份）广播给所有已绑定的 queue。
 
-![](https://www.rabbitmq.com/img/tutorials/intro/exchange-fanout.png)
+![](./img/exchange-fanout.png)
 
 ### Topic exchange
 
