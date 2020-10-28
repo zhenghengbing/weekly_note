@@ -4,9 +4,9 @@ RabbitMQ 是 AMQP 0-9-1 协议的一个典型实现，如果想熟悉 RabbitMQ�
 
 AMQP 0-9-1 全称是 Advanced Message Queuing Protocol。<br>
 
-AMQP 的作用可以简单描述为：<br>
+AMQP 的作用可以简单描述为：
 
-![](./img/hello-world-example-routing.png)<br>
+![](./img/hello-world-example-routing.png)
 
 AMQP 有三个主要组件，分别是：
 
