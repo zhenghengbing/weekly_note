@@ -117,7 +117,7 @@ AMQP 0-9-1 的 connection 就是 TCP 长连接<br>
 
 application 和 server 所有的连接都独占一个 connection（TCP 长连接），是非常不妥的：它消耗资源啊，并且可能还得设置防火墙<br>
 
-channel 应运而生，可以理解为：共享一个单独 TCP 长连接的轻量级 connection<br>
+channel 应运而生，可以理解为：共享同一个 TCP 长连接的轻量级 connection<br>
 
 客户端的每个协议操作都发生在 channel 上，channel 逻辑上是各自独立的，由 integer 类型的 channel id 标识<br>
 
