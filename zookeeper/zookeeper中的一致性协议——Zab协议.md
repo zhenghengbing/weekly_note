@@ -14,7 +14,7 @@
 2.保证一个全局的变更序列被顺序引用，zk是一个树形的结构，很多操作都需要先检查才能绝对是否执行，为了保证这一点，zab要保证同一个leader发起的事务要被顺序执行，同事还要保证只有先前的leader提交的的事务被执行之后，当前的leader服务器才可以发起事务。
 3.当leader进程出现异常的时候，整个zk集群可以正常工作。
 ## zab协议原理
-  zab协议要求每个leader都要经历三个阶段：发现，同步，广播
+  zab协议要求每个leader都要经历三个阶段：发现，同步，广播  
 **发现**：要求zk必须选出一个leader进程，同事leader会维护一个follower可用客户端列表。将来客户端可以和这些follower节点进行通信。  
 **同步**：leader要负责将本身的数据和follower完成同步，做很多副本存储。follower队列将队列中未处理完的请求消费完成后，写入本地事务日志中。  
 **广播**：leader可以接受客户端新的事务proposal请求，将新的proposal请求广播给所有的follower。  
@@ -37,7 +37,7 @@ zab协议包括两种基本的模式：**崩溃恢复**和**消息广播**
   一旦leader服务器出现崩溃或者超过半数的follower服务器不能正常连接，就会进入到崩溃恢复模式。  
   崩溃恢复主要包括两部分**leader选举**和**数据恢复**  
 #### leader选举
-  成为leader的条件：
+  成为leader的条件：  
   1.epoch值是最大的  
   2.若epoch值相等，选择zxid值最大的  
   3.若epoch和zxid值都相等，选择server_id最大的（server_id就是zoo.cfg中的myid）  
