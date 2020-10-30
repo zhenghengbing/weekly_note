@@ -20,29 +20,29 @@
 **广播**：leader可以接受客户端新的事务proposal请求，将新的proposal请求广播给所有的follower。  
 
 ## zab协议内容
-zab协议包括两种基本的模式：**崩溃恢复**和**消息广播**
+zab协议包括两种基本的模式：**崩溃恢复**和**消息广播**  
 ### 协议过程
   当整个集群启动过程中，或者当leader服务器出现网络中断，崩溃退出或重启等异常时，或者集群中超过半数的follower服务器不能与leader保持正常通信，zab协议就会进入崩溃恢复模式，选举出新的leader。当选举出了新的leader，同时集群中超脱半数的服务器和该leader服务器完成了数据同步，zab协议就会退出崩溃恢复模式，进入消息广播模式。
 ### 消息广播
   在zk集群中，数据副本的传递策略就是通过消息广播模式。消息广播类似于一个二段提交，但是又有所不同，二段提交要求协调者必须等待所有参与者全部反馈确认消息后，才能发送commit消息。而zab协议中的消息广播模式，只要求半数以上的follower返回确认消息就可以发送commit消息了。
 #### 消息广播的步骤
 1.客户端发起一个写请求
-2.leader服务器将客户端的写请求转换为事务proposal提案，同时为每一个proposal分配一个全局的ID，即zxid
-3.leader服务器为每一个follower服务器分配一个单独队列，然后将需要广播的proposal依次放入到队列中去，根据FIFO策略进行消息发送
-4.follower收到proposal之后，首先将其以事务日志的方式写入本地磁盘，写入成功之后返回ack确认消息
-5.leader服务器接收到半数以上的follower返回的ack确认消息之后，发送commit消息，并提交本身的事务
-6.follower接收到commit消息之后，提交事务日志中的上一条事务
+2.leader服务器将客户端的写请求转换为事务proposal提案，同时为每一个proposal分配一个全局的ID，即zxid  
+3.leader服务器为每一个follower服务器分配一个单独队列，然后将需要广播的proposal依次放入到队列中去，根据FIFO策略进行消息发送  
+4.follower收到proposal之后，首先将其以事务日志的方式写入本地磁盘，写入成功之后返回ack确认消息  
+5.leader服务器接收到半数以上的follower返回的ack确认消息之后，发送commit消息，并提交本身的事务  
+6.follower接收到commit消息之后，提交事务日志中的上一条事务  
 
 ### 崩溃恢复
-  一旦leader服务器出现崩溃或者超过半数的follower服务器不能正常连接，就会进入到崩溃恢复模式。
-  崩溃恢复主要包括两部分**leader选举**和**数据恢复**
+  一旦leader服务器出现崩溃或者超过半数的follower服务器不能正常连接，就会进入到崩溃恢复模式。  
+  崩溃恢复主要包括两部分**leader选举**和**数据恢复**  
 #### leader选举
   成为leader的条件：
-  1.epoch值是最大的
-  2.若epoch值相等，选择zxid值最大的
-  3.若epoch和zxid值都相等，选择server_id最大的（server_id就是zoo.cfg中的myid）
-  **解析一下epoch和zxid，zxid是每个服务器维护的一个事务id，是一个64位的数字，其中高32位代表的是epoch值，这个值的意义是每经过一个leader选举，epoch值加1，而低32位代表着在这个epoch值下，该服务器进行的事务次数，也是每提交了一次事务加1。**
-  每个节点也就是每个follower服务器在选举前，都默认投票给自己，当接收到其他节点的选票时，会根据leader选举条件更改自己的选票，然后重新发送选票给其他节点。当有一个节点获得 的选票超过半数时，该节点自动成为新的leader，其他节点就变成了follwer节点了。
+  1.epoch值是最大的  
+  2.若epoch值相等，选择zxid值最大的  
+  3.若epoch和zxid值都相等，选择server_id最大的（server_id就是zoo.cfg中的myid）  
+  **解析一下epoch和zxid，zxid是每个服务器维护的一个事务id，是一个64位的数字，其中高32位代表的是epoch值，这个值的意义是每经过一个leader选举，epoch值加1，而低32位代表着在这个epoch值下，该服务器进行的事务次数，也是每提交了一次事务加1。**  
+  每个节点也就是每个follower服务器在选举前，都默认投票给自己，当接收到其他节点的选票时，会根据leader选举条件更改自己的选票，然后重新发送选票给其他节点。当有一个节点获得 的选票超过半数时，该节点自动成为新的leader，其他节点就变成了follwer节点了。  
 #### 数据恢复
   1.完成 Leader 选举后（新的 Leader 具有最高的zxid），在正式开始工作之前（接收事务请求，然后提出新的 Proposal），Leader 服务器会首先确认事务日志中的所有的 Proposal 是否已经被集群中过半的服务器 Commit。
   2.Leader 服务器需要确保所有的 Follower 服务器能够接收到每一条事务的 Proposal ，并且能将所有已经提交的事务 Proposal 应用到内存数据中。等到 Follower 将所有尚未同步的事务 Proposal 都从 Leader 服务器上同步过啦并且应用到内存数据中以后，Leader 才会把该 Follower 加入到真正可用的 Follower 列表中。
