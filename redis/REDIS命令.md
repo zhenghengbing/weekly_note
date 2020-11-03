@@ -33,7 +33,7 @@ redis 字符串可以存储【字符串、整数、浮点数】三种类型
     >>> conn.decr('key')
     15
     >>> conn.decr('key', 10)
-    10
+    5
     ```
 
 #### 键值(VALUE)字符串操作
@@ -163,3 +163,38 @@ redis 字符串可以存储【字符串、整数、浮点数】三种类型
     {b'e', b'a', b'f', b'b', b'd', b'c'}
     ```
 
+### 散列
+
+#### 键值对操作
+- HMGET: `HMGET key-name key [key ...]` 从一个散列中获取一个或多个键的值
+- HMSET: `HMSET key-name key value  [key value, ...]` 为散列里一个或多个键设置值
+- HDEL: `HDEL key-name key [key ...]` 删除散列里面的一个或多个键值对
+- HLEN: `HLEN key-name` 返回散列包含的键值对数量
+    ```python
+    >>> conn.hmset('hash-key', {'k1':'v1', 'k2':'v2', 'k3':'v3'})
+    True
+    >>> conn.hmget('hash-key', ['k1', 'k2'])
+    [b'v1', b'v2']
+    >>> conn.hlen('hash-key')
+    3
+    >>> conn.hdel('hash-key', 'k1', 'k2')
+    2
+    ```
+
+#### 复杂操作
+- HEXISTS: `HEXISTS key-name key` 检查给定键是否存在散列中
+- HKEYS: `HKEYS key-name` 获取散列包含的所有键
+- HVALS: `HVALS key-name` 获取散列包含的所有值
+- HGETALL: `HGETALL key-name` 获取散列包含的所有键值对
+- HINCRBY: `HINCRBY key-name key increment` 将key保存的值加上整数increment
+- HINCRBYFLOAT: `HINCRBYFLOAT key-name key increment` 将key保存的值加上浮点数increment
+  ```python
+  >>> conn.hmset('hash-key2', {'k1':'v1', 'k2':1000*'v2'})
+  True
+  >>> conn.hkeys('hash-key2')
+  [b'k1', b'k2']
+  >>> conn.hexists('hash-key2', 'num')
+  False
+  >>> conn.hincrby('hash-key2', 'num', 2)
+  2
+  ```
