@@ -10,6 +10,7 @@
 $ name=Tom # 简单赋值
 $ msg="Hello world" # Bash 是 Shell 的一种，对空格敏感，如果变量值包含空格，需要用 "" 或 '' 包裹起来
 $ now=`date` # 将 date 命令的执行结果存入变量 now，该功能由 `` 实现
+$ now2=$(date) # 将 date 命令的执行结果存入变量 now2，该方式在 bash 中可用
 $ name2=$name # 将一个变量的值赋给另一个变量
 $ read name # 读取终端输入，并将输入值存入 name 变量
 ```
@@ -29,13 +30,10 @@ $ echo "$name, r u OK?" # 如果文本中包含空格，需要用引号引起来
 ```shell
 $ echo $((1+2)) # 输出 3
 $ result=$((1+2)) # 将结果赋给变量
+$ result2=$[1+2] # 将结果赋给变量，bash 独有
 ```
 
 ## 选择结构
-
-选择结构的实现有两种语法，分别是 **if** 和 **case**。下面分别进行介绍。
-
-### if 语句
 
 介绍写起来太麻烦了，直接看示例吧：
 
@@ -44,20 +42,69 @@ $ result=$((1+2)) # 将结果赋给变量
 
 name=`whoami`
 
-if [ $name = "root"]
+if [ $name = "root" ]
 then
 	echo "You are root"
 	echo "You are God"
+elif [ $name = "huairuo" ]
+then
+	echo "You are huairuo"
+	echo "You are a company"
 else
 	echo "You are $name"
 fi
+
+case $name in
+root)
+	echo "You are God"
+;;
+huairuo)
+	echo "You are company"
+;;
+*)
+	echo "Who are you"
+;;
+esac
 ```
 
-
+case 后的匹配条件可以用通配符，比如 * 就是任意文本
 
 ## 循环结构
 
+和其他语言类似，循环有两种方式，分别是 for 循环和 while 循环。下面分别给出示例：
+
+```shell
+#! /bin/bash
+
+while read line
+do
+echo $line
+done < filename(待读取的文件)
+
+for line in `cat filename(待读取的文件)`
+do
+echo $line
+done
+```
+
 ## 函数
+
+Bash 和 C 一样面向过程，所以没有对象之类的东西，代码复用及封装一般使用**函数**，下面给出示例：
+
+```shell
+#! /bin/bash
+
+# 获取计算机信息
+get_info() {
+	lscpu >> $1
+	uname -a >> $1
+	free -h >> $1
+	df -h >> $1
+}
+
+# 函数调用
+get_info /home/huairuo/result.log
+```
 
 ## Bash脚本
 
@@ -148,8 +195,6 @@ sh another.sh
 #!/bin/bash
 source another.sh
 ```
-
-
 
 ## 参考文档
 

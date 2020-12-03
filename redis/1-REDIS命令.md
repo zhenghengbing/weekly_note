@@ -198,3 +198,137 @@ redis 字符串可以存储【字符串、整数、浮点数】三种类型
   >>> conn.hincrby('hash-key2', 'num', 2)
   2
   ```
+
+### 有序集合
+
+#### 单集合
+
+- ZADD: `ZADD key-name score member [score member ...]` 将带有分值的元素添加到集合里
+- ZREM: `ZREM key-name member [member ...]` 从有序集合移除元素
+- ZCARD: `ZCARD key-name` 返回有序集合成员的数量
+- ZINCRBY: `ZINCRBY key-name increment member` 将成员的score值加上increment
+- ZCOUNT: `ZCOUNT key-name min mix` 返回分值介于min和max之间的成员数量
+- ZRANK: `ZRANK key-name member` 返回成员member在有序集合中的排名
+- ZSCORE: `ZSCORE key-name member` 返回成员member的分值
+- ZRANGE: `ZRANGE key-name start stop [WITHSCORES]` 返回有序集合中排名介于start和stop之间的成员，如果给定可选的WITHSCORES选项，成员分值一并返回
+- ZREVRANK: `ZREVRANK key-name member` 返回有序集合member的排名，排名按照分值从大到小
+- ZREVRANGE: `ZREVRANGE key-name start stop [WITHSCORES]` 返回有序集合中排名介于start和stop之间的成员（分值按照从大到小），如果给定可选的WITHSCORES选项，成员分值一并返回
+- ZRANGEBYSCORE: `ZRANGEBYSCORE key min max [WITHSCORES] [LIMIT offset count]` 返回有序集合中，分值介于min和max之间的所有成员
+- ZREVRANGEBYSCORE: `ZREVZRANGEBYSCORE key max, min [WITHSCORES] [LIMIT offset count]` 返回有序集合中，分值介于min和max中的所有成员，并按照分值从大到小的顺序返回
+- ZREMRANGEBYRANK: `ZREMRANGEBYRANK key-name start stop` 移除有序集合中排名介于start和stop之间的所有成员
+- ZREMRANGEBYSCORE: `ZREMRANGEBYSCORE key-name min max` 移除有序集合中分值介于min和max之间的所有成员
+    ```python
+    >>> conn.zadd('zset-key', {'a':3, 'b':2, 'c':1})
+    3
+    >>> conn.zcard('zset-key')
+    3
+    >>> conn.zincrby('zset-key', 3, 'c'    4.0
+    >>> conn.zscore('zset-key', 'b')
+    2.0
+    >>> conn.zrank('zset-key', 'c')
+    2
+    >>> conn.zcount('zset-key', 0, 3)
+    2
+    >>> conn.zrem('zset-key', 'b')
+    1
+    >>> conn.zrange('zset-key', 0, -1, withscores=True)
+    [(b'a', 3.0), (b'c', 4.0)] 
+    ```
+
+#### 多集合
+
+- ZINTERSTORE: `ZINTERSTORE dest-key key-count key [key ...] [WEIGHTS weight...]] [AGGREGATE SUM|MIN|MAX]` 对给定的有序集合执行类似于集合的交集运算
+- ZUNIONSTORE: `ZUNIONSTORE dest-key key-count key [key ...] [WEIGHTS weight...]] [AGGREGATE SUM|MIN|MAX]` 对给定的有序集合执行类似于集合的并集运算
+
+    ```python
+    >>> conn.sadd('zsk-1', {'a':1, 'b':2, 'c':3})
+    3
+    >>> conn.sadd('zsk-2', {'c':4, 'd':5, 'e':6})
+    3
+    >>> conn.zinterstore('zsk-i', {'zsk-1', 'zsk-2'}) # 默认SUM
+    1
+    >>> conn.zrange('zsk-i', 0, -1, withscores=True) 
+    [(b'c', 7.0)]
+    >>> conn.zinterstore('zsk-i', {'zsk-1', 'zsk-2'}, aggregate='min')
+    1
+    >>> conn.zrange('zsk-i', 0, -1, withscores=True)
+    [(b'c', 3.0)]
+    >>> conn.zinterstore('zsk-i', {'zsk-1', 'zsk-2'}, aggregate='max')
+    1
+    >>> conn.zrange('zsk-i', 0, -1, withscores=True)
+    [(b'c', 4.0)]
+    >>> conn.zunion('zsk-u', {'zsk-1', 'zsk-2'}) # 默认SUM
+    1
+    >>> conn.zrange('zsk-u', 0, -1, withscore=True)
+    [(b'a', 1.0), (b'b', 2.0), (b'd', 5.0), (b'e', 6.0), (b'c', 7.0)]
+    ```
+
+### 发布与订阅
+
+- SUBSCRIBE: `SUBSCRIBE channel [channel...]` 订阅一个或多个channel
+- UNSUBSCRIBE: `UNSUBSCRIBE [channel [channel..]]` 退订一个或多个channel，如果没有给定channel, 则退订所有channel
+- PUBLISH: `PUBLISH channel message` 向给定频道发送消息
+- PSUBSCRIBE: `PSUBSCRIBE pattern [pattern]` 订阅与给定的模式匹配的channel
+- PUNSUBSCRIBE: `PUNSUBSCRIBE [pattern [pattern...]]` 退订一个或多个与给定模式匹配的channel，如果没有给定任何模式，则退订所有channel
+
+
+### 排序
+
+- SORT: `SORT source-key [By pattern] [LIMIT offset count] [GET pattern [GET pattern...]] [ASC|DESC] [ALPHA] [STORE dest-ky]` 根据给定的选项，对输入列表、集合或者有序集合进行排序，然后返回或者存储排序的结果
+    ```python
+    >>> conn.rpush('sort-key', 23, 15, 110, 7)
+    4
+    >>> conn.sort('sort-key')
+    [b'7', b'15', b'23', b'110']
+    >>> conn.sort('sort-key', alpha=True)
+    [b'110', b'15', b'23', b'7']
+    >>> conn.hset('d-7', 'field', 5)  
+    1
+    >>> conn.hset('d-15', 'field', 1)
+    1
+    >>> conn.hset('d-23', 'field', 9)
+    1   
+    >>> conn.hset('d-110', 'field', 3)
+    1
+    conn.sort('sort-key', by='d-*->field') # 使用权重排序
+    [b'15', b'110', b'7', b'23']
+    >>> conn.sort('sort-key', by='d-*->field', get='d-*->field')
+    [b'1', b'3', b'5', b'9']
+    ```
+
+### 基本事务
+
+    redis基本事务可以让一个客户端在不被其他客户端打断的情况下执行多条命令，与关系型数据库事务执行过程中可以rollback不同，在redis中，被MULTI命令和EXEC命令包围的所有命令会一个一个的执行，直到所有命令都执行完毕，redis才会处理其他客户端的命令。
+
+    redis基本事务执行顺序：MULTI命令->其他命令->EXEC命令。当redis执行MULTI命令时，会将其他命令放入到队列中，直到执行EXEC命令，redis在不被打断的情况下，一个接一个地执行队列里面地命令。    
+
+
+### 过期时间
+    
+    redis中对键进行设置过期时间，给定时间后自动被删除。
+- PERSIST: `PERSIST key-name`  移除键的过期时间
+- TTL: `TTL key-name` 查看给定键距离过期还有多少秒
+- EXPIRE: `EXPIRE key-name seconds` 将键在指定的秒后过期
+- EXPIREAT: `EXPIREAT key-name timestamp` 将键的过期时间设置为UNIX时间戳
+- PTTL: `PTTL key-name` 查看键距离过期时间还有多少秒
+- PEXPIRE: `PEXPIRE key-name milliseconds` 将键在指定毫秒之后过期
+- PEXPIPEAT: `PEXPIREAT key-name timestamp-milliseconds` 将一个毫秒级精度的UNIX时间戳设置键的过期时间
+
+    ```python
+    >>> conn.set('key', 'value')
+    True
+    >>> conn.get('key')
+    'value'
+    >>> conn.expire('key', 2)
+    >>> conn.get('key')
+    >>> conn.set('key', 'value2')
+    True
+    >>> conn.expire('key', 100)
+    True
+    >>> conn.ttl('key')
+    96
+    ```
+
+
+
+
