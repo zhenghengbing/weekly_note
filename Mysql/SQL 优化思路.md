@@ -26,19 +26,19 @@ KEY `a`(`a`)
 
 我们看下 explain select * from t;的KEY结果是NULL
 
-![img](C:\Users\hr\AppData\Local\YNote\data\qq377F87FE1E39890259DA529BF9E7D30C\03204fa3d0434750b0d41e367c63c149\640.jpeg)
+![image-201.jpg](imgs/201.jpeg)
 
 　　（图一）
 
 explain select * from t where id=2;的KEY结果是PRIMARY，就是我们常说的使用了主键索引
 
-![img](C:\Users\hr\AppData\Local\YNote\data\qq377F87FE1E39890259DA529BF9E7D30C\04d921e04a9042d4a6969c8b406bdb30\640.jpeg)
+![image-202.jpg](imgs/202.jpeg)
 
 　（图二）
 
 explain select a from t;的KEY结果是a，表示使用了a这个索引。
 
-![img](C:\Users\hr\AppData\Local\YNote\data\qq377F87FE1E39890259DA529BF9E7D30C\dfb75071c3f3435599032b33d63e7c43\640.jpeg)
+![image-203.jpg](imgs/203.jpeg)
 
 　（图三）
 
@@ -54,11 +54,11 @@ explain select a from t;的KEY结果是a，表示使用了a这个索引。
 
 我们都知道，InnoDB是索引组织表，所有的数据都是存储在索引树上面的。比如上面的表t，这个表包含了两个索引，一个主键索引和一个普通索引。在InnoDB里，数据是放在主键索引里的。如图所示：
 
-![img](C:\Users\hr\AppData\Local\YNote\data\qq377F87FE1E39890259DA529BF9E7D30C\e5794fbcc4354147be89c388f8bdde47\640.webp)
+![image-204.jpg](imgs/204.webp)
 
 可以看到数据都放在主键索引上，如果从逻辑上说，所有的InnoDB表上的查询，都至少用了一个索引，所以现在我问你一个问题，如果你执行select from t where id>0，你觉得这个语句有用上索引吗？
 
-![img](C:\Users\hr\AppData\Local\YNote\data\qq377F87FE1E39890259DA529BF9E7D30C\9a7c0ae276bd4a39abbce6c5a00ff7f1\640.webp)
+![image-205.jpg](imgs/205.webp)
 
 我们看上面这个语句的explain的输出结果显示的是PRIMARY。其实从数据上你是知道的，这个语句一定是做了全面扫描。但是优化器认为，这个语句的执行过程中，需要根据主键索引，定位到第1个满足ID>0的值，也算用到了索引。
 
@@ -80,7 +80,7 @@ explain select a from t;的KEY结果是a，表示使用了a这个索引。
 
 我们来看看建立索引以后，这个表的组织结构图：
 
-![img](C:\Users\hr\AppData\Local\YNote\data\qq377F87FE1E39890259DA529BF9E7D30C\6dd02c3e3cba453b8a9293297956da80\640.jpeg)
+![image-206.jpg](imgs/206.jpeg)
 
 这个语句的执行流程是这样的:
 
@@ -110,7 +110,7 @@ t_people表上有一个索引是姓名和年龄的联合索引，那这个联合
 
 在MySQL5.5和之前的版本中，这个语句的执行流程是这样的:
 
-![img](C:\Users\hr\AppData\Local\YNote\data\qq377F87FE1E39890259DA529BF9E7D30C\3e69e7c5d191416cbfc4aa41c7fd7b9b\640.webp)
+![image-207.jpg](imgs/207.webp)
 
 - 首先从联合索引上找到第1个年龄字段是张开头的记录，取出主键id，然后到主键索引树上，根据id取出整行的值；
 - 判断年龄字段是否等于8，如果是就作为结果集的一行返回，如果不是就丢弃。
@@ -122,7 +122,7 @@ t_people表上有一个索引是姓名和年龄的联合索引，那这个联合
 
 在MySQL5.6版本，引入了index condition pushdown的优化。我们来看看这个优化的执行流程：
 
-![img](C:\Users\hr\AppData\Local\YNote\data\qq377F87FE1E39890259DA529BF9E7D30C\1a3d0d39f478458fba8452e1c47c9afc\640.webp)
+![image-208.jpg](imgs/208.webp)
 
 - 首先从联合索引树上，找到第1个年龄字段是张开头的记录，判断这个索引记录里面，年龄的值是不是8，如果是就回表，取出整行数据，作为结果集的一部分返回，如果不是就丢弃；
 - 在联合索引树上，向右遍历，并判断年龄字段后，根据需要做回表，直到碰到联合索引树上名字的第1个字不是张的记录为止；
